@@ -874,6 +874,7 @@ def pcd_to_3d(
     assets_dir=None,
     rel_dir=None,
     abs_paths=False,
+    flag_for_projection=True,
     progress=None,
 ):
     """Converts the point cloud samples in the given dataset to 3D samples.
@@ -900,6 +901,8 @@ def pcd_to_3d(
             :func:`fiftyone.core.storage.normalize_path`
         abs_paths (False): whether to store absolute paths to the point cloud
             files in the exported ``.fo3d`` files
+        flag_for_projection (True): whether to flag the point clouds for usage
+            in orthographic projection
         progress (None): whether to render a progress bar (True/False), use the
             default value ``fiftyone.config.show_progress_bars`` (None), or a
             progress callback function to invoke instead
@@ -914,6 +917,7 @@ def pcd_to_3d(
             assets_dir=assets_dir,
             rel_dir=rel_dir,
             abs_paths=abs_paths,
+            flag_for_projection=flag_for_projection,
             progress=progress,
         )
         return
@@ -924,6 +928,7 @@ def pcd_to_3d(
         assets_dir=assets_dir,
         rel_dir=rel_dir,
         abs_paths=abs_paths,
+        flag_for_projection=flag_for_projection,
         progress=progress,
     )
 
@@ -938,6 +943,7 @@ def _pcd_slices_to_3d_slices(
     assets_dir=None,
     rel_dir=None,
     abs_paths=False,
+    flag_for_projection=True,
     progress=None,
 ):
     if isinstance(slices, dict):
@@ -965,6 +971,7 @@ def _pcd_slices_to_3d_slices(
                 assets_dir=assets_dir,
                 rel_dir=rel_dir,
                 abs_paths=abs_paths,
+                flag_for_projection=flag_for_projection,
                 progress=progress,
             )
 
@@ -983,6 +990,7 @@ def _pcd_to_3d(
     assets_dir=None,
     rel_dir=None,
     abs_paths=False,
+    flag_for_projection=True,
     progress=None,
 ):
     filename_maker = None
@@ -1020,6 +1028,7 @@ def _pcd_to_3d(
                 filename_maker=filename_maker,
                 media_exporter=media_exporter,
                 abs_paths=abs_paths,
+                flag_for_projection=flag_for_projection,
             )
             scene_paths.append(scene_path)
 
@@ -1034,6 +1043,7 @@ def _make_scene(
     filename_maker=None,
     media_exporter=None,
     abs_paths=False,
+    flag_for_projection=True,
 ):
     if filename_maker is not None:
         scene_path = filename_maker.get_output_path(
@@ -1051,7 +1061,13 @@ def _make_scene(
             pcd_path = rel_path
 
     scene = Scene()
-    scene.add(Pointcloud("point cloud", pcd_path))
+    scene.add(
+        Pointcloud(
+            "point cloud",
+            pcd_path,
+            flag_for_projection=flag_for_projection,
+        )
+    )
     scene.write(scene_path)
 
     return scene_path
